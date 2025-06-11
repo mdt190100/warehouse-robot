@@ -1,0 +1,15 @@
+env:
+  grid_size: [6, 6]
+  max_steps: 50
+
+agent:
+  gamma: 0.99
+  learning_rate: 0.001
+  epsilon_start: 1.0
+  epsilon_end: 0.05
+  epsilon_decay: 500
+
+train:
+  episodes: 1000
+  batch_size: 64
+  target_update: 10
