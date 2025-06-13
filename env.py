@@ -1,4 +1,3 @@
-# env.py
 import numpy as np
 
 class WarehouseEnv:
@@ -9,58 +8,51 @@ class WarehouseEnv:
 
     def reset(self):
         self.grid = np.zeros(self.grid_size, dtype=int)
-
-        # Khởi tạo các vị trí
-        self.agent_pos = [0, 0]  # Điểm xuất phát
-        self.pickup_pos = [self.grid_size[0] - 1, 0]   # Vị trí lấy hàng (ví dụ dưới trái)
-        self.delivery_pos = [self.grid_size[0] - 1, self.grid_size[1] - 1]  # Vị trí giao hàng (ví dụ dưới phải)
-
+        self.agent_pos = [0, 0]
+        self.pickup_pos = [self.grid_size[0] - 1, 0]
+        self.delivery_pos = [self.grid_size[0] - 1, self.grid_size[1] - 1]
         self.has_package = False
         self.steps = 0
 
-        # Vật cản
-        self.grid[2, 2] = -1
-        self.grid[3, 1] = -1
+        self.grid[2, 2] = -1  # obstacle
+        self.grid[3, 1] = -1  # obstacle
 
         return self._get_state()
 
     def _get_state(self):
-        # Trạng thái = vị trí robot + cờ đã lấy hàng hay chưa
         return np.array(self.agent_pos + [int(self.has_package)], dtype=np.float32)
 
     def step(self, action):
-        """
-        Actions: 0=UP, 1=DOWN, 2=LEFT, 3=RIGHT
-        """
         row, col = self.agent_pos
-        if action == 0: row -= 1
-        elif action == 1: row += 1
-        elif action == 2: col -= 1
-        elif action == 3: col += 1
+        if action == 0: row -= 1  # up
+        elif action == 1: row += 1  # down
+        elif action == 2: col -= 1  # left
+        elif action == 3: col += 1  # right
 
-        # Giữ trong giới hạn
+        # Clamp position within grid
         row = np.clip(row, 0, self.grid_size[0] - 1)
         col = np.clip(col, 0, self.grid_size[1] - 1)
 
-        # Tránh vật cản
-        if self.grid[row, col] != -1:
+        if self.grid[row, col] != -1:  # not hitting obstacle
             self.agent_pos = [row, col]
 
         self.steps += 1
         done = False
-        reward = -0.2  # Phạt nhẹ mỗi bước để tối ưu hoá đường đi
+        reward = -0.2  # small penalty for step
 
-        # Đến chỗ lấy hàng
         if not self.has_package and self.agent_pos == self.pickup_pos:
             self.has_package = True
-            reward = +5  # Thưởng khi nhặt hàng
+            reward = +20  # reward for picking up package
 
-        # Giao hàng thành công
         elif self.has_package and self.agent_pos == self.delivery_pos:
-            reward = +10
+            reward = +50  # reward for delivering package
             done = True
 
-        # Hết bước thì kết thúc
+        # Shaping reward: encourage moving closer to goal
+        target = self.delivery_pos if self.has_package else self.pickup_pos
+        distance = np.linalg.norm(np.array(self.agent_pos) - np.array(target))
+        reward += -0.05 * distance
+
         if self.steps >= self.max_steps:
             done = True
 
@@ -75,9 +67,9 @@ class WarehouseEnv:
         pr, pc = self.pickup_pos
         dr, dc = self.delivery_pos
 
-        view[pr, pc] = "P"  # Pickup
-        view[dr, dc] = "D"  # Delivery
-        view[r, c] = "A"    # Agent
+        view[pr, pc] = "P"
+        view[dr, dc] = "D"
+        view[r, c] = "A"
 
         print("\n".join(" ".join(row) for row in view))
         print()

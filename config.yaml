@@ -7,7 +7,7 @@ agent:
   learning_rate: 0.001
   epsilon_start: 1.0
   epsilon_end: 0.05
-  epsilon_decay: 500
+  epsilon_decay: 0.999
 
 train:
   episodes: 1000

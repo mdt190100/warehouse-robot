@@ -6,7 +6,7 @@ import torch
 from utils import plot_rewards, save_model
 import os
 
-def train_agent(episodes=500, batch_size=64, target_update=10):
+def train_agent(episodes=10000, batch_size=32, target_update=10):
     env = WarehouseEnv()
     agent = DQNAgent(state_dim=3, action_dim=4)
 
@@ -38,3 +38,5 @@ if __name__ == "__main__":
     os.makedirs("models", exist_ok=True)
     os.makedirs("outputs", exist_ok=True)
     train_agent()
+
+

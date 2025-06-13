@@ -1,6 +1,5 @@
 # visualizer.py
 import pygame
-import sys
 
 class WarehouseVisualizer:
     def __init__(self, env, cell_size=80):
@@ -20,20 +19,19 @@ class WarehouseVisualizer:
                 rect = pygame.Rect(col * self.cell_size, row * self.cell_size, self.cell_size, self.cell_size)
                 cell = self.env.grid[row, col]
 
-                # Draw obstacle
                 if cell == -1:
-                    pygame.draw.rect(self.screen, (0, 0, 0), rect)  # Black box
+                    pygame.draw.rect(self.screen, (0, 0, 0), rect)  # Obstacle
                 else:
-                    pygame.draw.rect(self.screen, (200, 200, 200), rect, 1)  # Gray border
+                    pygame.draw.rect(self.screen, (200, 200, 200), rect, 1)
 
-        # Draw target (green)
-        tr, tc = self.env.target_pos
-        pygame.draw.rect(
-            self.screen, (0, 255, 0),
-            pygame.Rect(tc * self.cell_size, tr * self.cell_size, self.cell_size, self.cell_size)
-        )
+        pr, pc = self.env.pickup_pos
+        pygame.draw.rect(self.screen, (0, 0, 255),
+                         pygame.Rect(pc * self.cell_size, pr * self.cell_size, self.cell_size, self.cell_size))
 
-        # Draw agent (red circle)
+        dr, dc = self.env.delivery_pos
+        pygame.draw.rect(self.screen, (0, 255, 0),
+                         pygame.Rect(dc * self.cell_size, dr * self.cell_size, self.cell_size, self.cell_size))
+
         r, c = self.env.agent_pos
         center = (c * self.cell_size + self.cell_size // 2, r * self.cell_size + self.cell_size // 2)
         pygame.draw.circle(self.screen, (255, 0, 0), center, self.cell_size // 3)
