@@ -117,9 +117,6 @@ log_path: "logs/train_log.csv"
 🛠️ Installation
 Requires Python 3.10+
 
-bash
-복사
-편집
 git clone https://github.com/mdt190100/warehouse-robot.git
 cd warehouse-robot-rl
 pip install -r requirements.txt
